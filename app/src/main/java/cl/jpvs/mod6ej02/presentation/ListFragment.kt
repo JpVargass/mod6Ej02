@@ -5,8 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import cl.jpvs.mod6ej02.R
 import cl.jpvs.mod6ej02.databinding.FragmentListBinding
+import kotlinx.coroutines.launch
 
 /*
 * Pasos para crear un recycler view
@@ -21,13 +25,11 @@ import cl.jpvs.mod6ej02.databinding.FragmentListBinding
 
 class ListFragment : Fragment() {
 lateinit var binding : FragmentListBinding
-
+private val itemsViewModel : ItemsViewModel by activityViewModels()
+val adapter = ItemAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -35,26 +37,26 @@ lateinit var binding : FragmentListBinding
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false)
+        binding = FragmentListBinding.inflate(inflater,container, false)
+        initLista()
+        initDelete()
+        return binding.root
+    }
+    private fun initDelete() {
+        binding.floatingDelete.setOnClickListener() {
+            viewLifecycleOwner.lifecycleScope.launch {
+                itemsViewModel.deleteDatoView()
+                findNavController().navigate(R.id.action_listFragment_to_addFragment)
+            }
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun initLista() {
+        itemsViewModel.getAllItems().observe(viewLifecycleOwner){
+            adapter.setData(it)
+        }
+
+        binding.RecyclerV.adapter = adapter
     }
+
 }

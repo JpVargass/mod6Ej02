@@ -25,6 +25,7 @@ import cl.jpvs.mod6ej02.databinding.ItemBinding
 [ x] obtener los datos
 */
 class ItemAdapter : RecyclerView.Adapter <ItemAdapter.ItemViewHolder> (){
+
     lateinit var binding: ItemBinding
     private  val listItem = mutableListOf<Item>()
     //
@@ -34,7 +35,11 @@ class ItemAdapter : RecyclerView.Adapter <ItemAdapter.ItemViewHolder> (){
         binding = ItemBinding.inflate(LayoutInflater.from(parent.context),parent, false)
         return ItemViewHolder(binding)
     }
-    fun setData(listaItem: Item : List<Item>)
+    fun setData(item: List<Item>){
+        this.listItem.clear()
+        this. listItem.addAll(item)
+        notifyDataSetChanged()
+    }
     override fun getItemCount(): Int {
       return listItem.size
     }
@@ -44,9 +49,12 @@ class ItemAdapter : RecyclerView.Adapter <ItemAdapter.ItemViewHolder> (){
         holder.render(item)
 
     }
-    class ItemViewHolder(v: ItemBinding) : RecyclerView.ViewHolder(v.root) {
+    class ItemViewHolder(val v: ItemBinding) : RecyclerView.ViewHolder(v.root) {
         fun render(item : Item){
             v.tvNombre.text = item.nombre
+            v.tvCantidad.text = item.cantidad.toString()
+            v.tvPrecio.text = item.precio.toString()
+            v.tvTotal.text = (item.precio * item.cantidad).toString()
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import cl.jpvs.mod6ej02.databinding.FragmentAddBinding
 
@@ -20,36 +21,40 @@ class AddFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentAddBinding.inflate(layoutInflater, container, false)
         initListener()
+        cargarItems()
         return binding.root
     }
-  private fun initListener() {
+
+    private fun cargarItems() {
+        itemsViewModel.getAllItems().observe(viewLifecycleOwner) {
+            var aux = 0
+            for (it in it) {
+                val precios = it.precio * it.cantidad
+                aux = (aux + precios).toInt()
+            }
+            binding.txtResultado.text = "$ $aux"
+        }
+    }
+
+        fun guardarItem(nombre: String, precio: Double, cantidad: Double) {
+            itemsViewModel.insertItem(nombre, precio, cantidad)
+        }
+
+        private fun initListener() {
        binding.btnGuardar.setOnClickListener{
            val nombre = binding.editTextNombre.text.toString()
-           val precio = binding.editTextPrecio.text.toString().toInt()
-           val cantidad = binding.editTextCantidad.text.toString().toInt()
+           val precio = binding.editTextPrecio.text.toString().toDouble()
+           val cantidad = binding.editTextCantidad.text.toString().toDouble()
 
-           itemsViewModel.insertItem(nombre,precio,cantidad)
+           //itemsViewModel.insertItem(nombre,precio,cantidad)
+           guardarItem(nombre,precio,cantidad)
+           binding.editTextNombre.setText("")
+           binding.editTextPrecio.setText("")
+           binding.editTextCantidad.setText("")
+           Toast.makeText(requireContext(), "Item Agregado", Toast.LENGTH_SHORT).show()
+
 
        }
   }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }
