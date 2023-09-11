@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import cl.jpvs.mod6ej02.R
 import cl.jpvs.mod6ej02.databinding.FragmentAddBinding
 
 
 class AddFragment : Fragment() {
     lateinit var binding: FragmentAddBinding
-    private val itemsViewModel : ItemsViewModel by activityViewModels()
+    private val itemsViewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,25 +38,33 @@ class AddFragment : Fragment() {
         }
     }
 
-        fun guardarItem(nombre: String, precio: Double, cantidad: Double) {
-            itemsViewModel.insertItem(nombre, precio, cantidad)
+    fun guardarItem(nombre: String, precio: Double, cantidad: Double) {
+        itemsViewModel.insertItem(nombre, precio, cantidad)
+    }
+
+    private fun initListener() {
+        binding.btnGuardar.setOnClickListener {
+            val nombre = binding.editTextNombre.text.toString()
+            val precio = binding.editTextPrecio.text.toString().toDouble()
+            val cantidad = binding.editTextCantidad.text.toString().toDouble()
+
+            //itemsViewModel.insertItem(nombre,precio,cantidad)
+            guardarItem(nombre, precio, cantidad)
+            binding.editTextNombre.setText("")
+            binding.editTextPrecio.setText("")
+            binding.editTextCantidad.setText("")
+            Toast.makeText(requireContext(), "Item Agregado", Toast.LENGTH_SHORT).show()
+
+
+        }
+        binding.floatingboleta.setOnClickListener {
+            findNavController().navigate(R.id.action_addFragment_to_listFragment)
         }
 
-        private fun initListener() {
-       binding.btnGuardar.setOnClickListener{
-           val nombre = binding.editTextNombre.text.toString()
-           val precio = binding.editTextPrecio.text.toString().toDouble()
-           val cantidad = binding.editTextCantidad.text.toString().toDouble()
-
-           //itemsViewModel.insertItem(nombre,precio,cantidad)
-           guardarItem(nombre,precio,cantidad)
-           binding.editTextNombre.setText("")
-           binding.editTextPrecio.setText("")
-           binding.editTextCantidad.setText("")
-           Toast.makeText(requireContext(), "Item Agregado", Toast.LENGTH_SHORT).show()
+    }
 
 
-       }
-  }
+
+
 
 }
